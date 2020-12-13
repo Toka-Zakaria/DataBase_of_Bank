@@ -1,0 +1,503 @@
+/*
+ * Data.c
+ *
+ *  Created on: Oct 21, 2020
+ *      Author: Toka Zakaria
+ */
+
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+struct Customer
+{
+	char Customer_name[60];
+	unsigned int Customer_ID;
+	unsigned int Customer_Money;
+
+	struct Customer *next;
+}new;
+
+struct Customer *head = NULL;
+
+/*Function to create new customer data*/
+void Create_NEW_customer_AtFiRST(struct Customer *data)
+{
+	//put a pointer in the begin of the linked list
+	struct Customer *current = head;
+	//variable to us it as counter for the for loop
+	unsigned char counter;
+	//create new node of data and next pointer
+	struct Customer *link =(struct Customer*) malloc(sizeof(struct Customer));
+
+	/*
+	 * insert the data member by member:
+	 *insert the name member at first the entered name
+	 *insert the customer's ID
+	 *insert the customer's value of money
+	 */
+	strcpy( (link -> Customer_name) ,(data -> Customer_name) );
+
+	//allow the counter to enter the ID
+	(link -> Customer_ID) = (data -> Customer_ID);
+
+	/*make a condition to save personality for each customer
+	 * to make every customer has his own ID without repeat
+	 */
+	/**************************************************************/
+	//for loop to move on all customers in the list
+	for(counter=0; (current != NULL) ;counter++)
+	{
+		//to check every iteration that there is no customer has the same entered ID
+		if ((current->Customer_ID)== data -> Customer_ID ){
+			printf("sorry invalid ID,Another customer use this ID\nTRY Again!\n");
+			return; //to exit from function if the ID is repeated
+		}
+		//if the condition false go to the next customer
+		current= current->next;
+	}
+	//******************************************************************/
+
+	//allow the customer to enter the value of money
+	link -> Customer_Money = data -> Customer_Money;
+
+	/*
+	 * include the new customer in the list
+	 * by connecting the arrows together
+	 */
+	link -> next = head;
+	//move the head to the new node
+	head = link;
+	//end of the function
+	return;
+}
+
+//function to Delete customer data
+
+void DeleteCustomer(unsigned int ID)
+{
+	//variable to use it as counter for for loop
+	unsigned char i;
+	//pointer to use to to delete the node
+	struct Customer *current= head;
+	//pointer to use it to connect the list by each other before delete the node
+	struct Customer *previous = head;
+
+
+
+	//if the required Deleted ID in the head
+	if ((current -> Customer_ID) == ID)
+	{
+		//move the head to the next customer
+		head = (previous-> next);
+		//delete the node
+		free(current);
+
+	}
+
+	else{
+
+		//to move the current until the required deleted node
+		for (i=0; ((current -> Customer_ID) != ID);i++)
+		{
+			current = (current-> next);
+
+			//if the loop ended and the condition still true
+			//that is mean that there is no matched data, so end from the function
+			if (current == NULL)
+			{
+				printf("Sorry, We have no customer with the entered ID\nTRY Again!\n");
+
+				return;
+			}
+		}
+
+
+
+
+
+		//to move the previous until the node before the current
+		while ( (previous -> next) != current)
+		{
+			previous = (previous->next);
+		}
+
+		/*save the linked list from lost
+		 * connect the previous node to the node after the current
+		 */
+		(previous -> next) = (current-> next);
+		//delete the current node
+		free(current);
+	}
+	return;
+}//end of the function
+
+
+//function to edit customer data
+void EditCustomer(unsigned int *ID, unsigned char *edit_operation)
+{
+	struct Customer *current= head;
+	char new_name[60];
+	unsigned char counter;
+	unsigned int new_ID;
+	unsigned int new_money;
+
+	/****************************************************************/
+	//this block to check if the bank have the entered ID or not
+
+	for (counter=0; ((current -> Customer_ID) != *ID) ;counter++)
+	{
+		current = (current-> next);
+
+		//if the loop ended and the condition still true
+		//that is mean that there is no matched data, so end from the function
+		if (current == NULL)
+		{
+			printf("Sorry, We have no customer with the entered ID\nTRY Again!\n");
+			return;
+		}
+
+	} //end of the loop
+	/**********************************************************************/
+
+	//return the current on the head
+	current = head;
+
+
+	//loop to reach the node wanted to edit
+	for (counter= 0 ; (current-> Customer_ID) != *ID ; counter++)
+	{
+		current = current -> next;
+	}
+
+	//condition to check if the current stop at the same entered ID
+	if (current -> Customer_ID == *ID)
+	{
+		//switch case to detect which operation the user decided
+		switch(*edit_operation){
+		//if the decided operation was the first
+		case '1':
+			//ask the user to enter the new name
+			printf("Enter the new name of the customer\n");
+			//store the new name in variable
+			scanf("%s",new_name);
+			//overwrite the new name in the old name
+			strcpy((current->Customer_name), new_name);
+			//tell the user that the operation is done
+			printf("The operation completed\n");
+			break;
+
+			//if the decided operation was second
+		case '2':
+			//ask the user to enter the new ID
+			printf("Enter the new ID of the customer\n");
+			//store the new ID in a variable
+			scanf("%d", &new_ID);
+
+
+			//to return it to first again
+			current = head;
+			/****************************************************/
+			//this block to know if the entered ID similar to another customer or not
+			for(counter=0; current != NULL ; counter++){
+				if((current->Customer_ID) == new_ID)
+				{
+					//if in any iteration found that, this message will be printed, then exit from function
+					printf("Sorry, The entered ID is for another customer!\nTry another One!\n");
+					return;
+				}
+				//to move to another node
+				current = current->next;
+			}
+			/*******************************************************/
+
+			//to return it to first again
+			current = head;
+
+			//if the loop ended successfully, it will overwrite the ID in the old ID
+			//loop to reach the node wanted to edit again
+			for (counter= 0 ; (current-> Customer_ID) != *ID ; counter++)
+			{
+				current = current -> next;
+			}
+
+
+			current->Customer_ID = new_ID;
+			//tell the user that the operation is done
+			printf("The operation completed\n");
+			break;
+
+			//if the decided operation was the third
+		case '3':
+			//ask the user to enter the new value of money
+			printf("Enter the new money value of the customer\n");
+			//store the value in a variable
+			scanf("%d", &new_money);
+			//over write the new value of money in the old
+			current->Customer_Money = new_money;
+			//message to user to tell him the operation is done
+			printf("The operation completed\n");
+			break;
+			//if the decided operation was NOT one of the above decisions
+			//this message will appear
+		default:
+			printf("Sorry, Invalid input\nTry Again!\n");
+			break;
+		}
+
+	}
+
+}
+
+void MoveMoney(unsigned int *ID1 , unsigned int *ID2 , unsigned int *PassedMoney)
+{
+	//the man who will pay
+	struct Customer *client1 = head;
+	//the man who will recieve
+	struct Customer *client2 = head;
+	unsigned char i;
+
+	/***********************************************************/
+	//this block to check if the entered ID1 in the bank or not
+	for (i=0; ((client1 -> Customer_ID) != *ID1);i++)
+	{
+		client1 = (client1-> next);
+
+		//if the loop ended and the condition still true
+		//that is mean that there is no matched data, so end from the function
+		if (client1== NULL)
+		{
+			printf("Sorry, We have no customer with the entered ID1\nTRY Again!\n");
+			return;
+		}
+	}
+
+	/**************************************************************/
+
+	/***********************************************************/
+	//this block to check if the entered ID1 in the bank or not
+	for (i=0; ((client2 -> Customer_ID) != *ID2);i++)
+	{
+		client2 = (client2-> next);
+
+		//if the loop ended and the condition still true
+		//that is mean that there is no matched data, so end from the function
+		if ( client2 == NULL) //reach the end of the list
+		{
+			printf("Sorry, We have no customer with the entered ID2\nTRY Again!\n");
+			return;
+		}
+	}
+
+	/**************************************************************/
+
+
+	//return client1and client2 to first (head)
+	client1 = head;
+	client2= head;
+
+
+
+	//to move client1 to the entered ID1
+	for(i=0 ; (client1->Customer_ID) != *ID1 ;i++)
+	{
+		client1 = client1->next;
+	}
+
+	//to move client2 to the entered ID2
+	for(i=0 ; (client2->Customer_ID) != *ID2 ;i++)
+	{
+		client2 = client2->next;
+	}
+
+	//client1 is the man who will pay
+	//so this condition to check if there is enough money in his pocket
+	//for this operation or not
+	if ((client1->Customer_Money) < *(PassedMoney))
+	{
+		printf("Sorry the client has not enough cash for this operation\nTry Again!\n");
+		return;
+	}
+
+
+	else{
+		//add the value of money to the client2
+		(client2-> Customer_Money) = (client2-> Customer_Money) + (*PassedMoney);
+
+		//sub the value of money from client1
+		(client1-> Customer_Money) = (client1-> Customer_Money) - (*PassedMoney);
+		return;
+	}
+}
+
+//function to show data
+void ShowData(unsigned int ID_show)
+{
+	unsigned char i;
+	struct Customer *current= head;
+
+	//to move the current until the required show node
+	for (i=0; ((current -> Customer_ID) != ID_show);i++)
+	{
+		current = (current-> next);
+		//if the loop ended and the condition still true
+		//that is mean that there is no matched data, so end from the function
+		if (current == NULL)
+		{
+			printf("Sorry, We have no customer with the entered ID\nTRY Again!\n");
+			return;
+		}
+
+	} //end of the loop
+
+	//return the current to the head
+	current = head;
+
+	//move the current to the required show ID
+	for(i=0; (current->Customer_ID) != ID_show ; i++)
+	{
+		current=current->next;
+	}
+
+	printf("Customer's name is \"%s\"  ", current->Customer_name);
+	printf("Customer's ID is \"%d\"  ", current->Customer_ID);
+	printf("Customer's Money value is \"%d\"\n", current->Customer_Money);
+}
+
+
+//function to print the linked list
+void PrintLinkedList(void)
+{
+	unsigned char i;
+	struct Customer *ptr= head;
+
+	for(i=1 ; ptr!= NULL ; i++)
+	{
+		printf("Customer(%d)_name:\"%s\"  ",i, ptr->Customer_name);
+		printf("Customer(%d)_ID \"%d\"  ",i,ptr->Customer_ID);
+		printf("Customer(%d)_Money \"%d\"\n",i,ptr->Customer_Money);
+		ptr = ptr->next;
+	}
+}
+
+
+//Application
+
+int main(void)
+{
+
+	setvbuf(stdout, NULL, _IONBF, 0);
+
+	setvbuf(stderr, NULL, _IONBF, 0);
+
+	struct Customer C1 = {"John",12345,550};
+	struct Customer C2 = {"Jennifer",23456,1000};
+	struct Customer C3 = {"Bryan",34567,750};
+	struct Customer C4 = {"Julie",45678,900};
+
+	Create_NEW_customer_AtFiRST(&C1);
+	Create_NEW_customer_AtFiRST(&C2);
+	Create_NEW_customer_AtFiRST(&C3);
+	Create_NEW_customer_AtFiRST(&C4);
+
+
+	PrintLinkedList();
+
+	//for switch case
+	char match;
+	unsigned int ID;
+	unsigned char operation;
+	unsigned int ID1;
+	unsigned int ID2;
+	unsigned int Money;
+
+
+	//message in the begin of the program
+	printf("Please Enter the number of the required operation:\n");
+	printf("A-Create a DataBase of New customer\n");
+	printf("B-Delete DataBase of a customer\n");
+	printf("C-Edit DataBase of a customer\n");
+	printf("D-Move money from customer to another customer\n");
+	printf("E-Show DataBase of A customer\n");
+	printf("F-Exit\n");
+	scanf("%c", &match);
+
+
+	switch (match)
+	{
+	case 'A':
+	case 'a':
+		printf("Enter the data of the new customer please;\n");
+
+		printf("Enter Customer's name\n");
+		scanf("%s", (new.Customer_name));
+
+		printf("Enter Customer's ID\n");
+		scanf("%d", &(new.Customer_ID));
+
+		printf("Enter the value of his money\n");
+		scanf("%d", &(new.Customer_Money));
+
+		Create_NEW_customer_AtFiRST(&new);
+		printf("The operation completed\n");
+		printf("Here is the new data of the Bank\n");
+		PrintLinkedList();
+
+		break;
+
+
+	case 'B':
+	case 'b':
+		printf("Enter the ID of the customer you want to delete the DataBase\n");
+		scanf("%d",&ID);
+		DeleteCustomer(ID);
+		printf("The operation completed\n");
+		printf("Here is the new Database of the bank\n");
+		PrintLinkedList();
+		break;
+
+	case 'C':
+	case 'c':
+		printf("Enter the ID of the customer you want to edit his data,then\n");
+		printf("Enter which type of data you want to edit,Select the number of the operation\n");
+		printf("1-Customer's name\n2-Customer's ID\n3-Customer's Money\n");
+		scanf("%d %c", &ID, &operation);
+		EditCustomer(&ID, &operation);
+		printf("Here is the new data of the Bank\n");
+		PrintLinkedList();
+		break;
+
+	case 'D':
+	case 'd':
+		printf("Enter the value of the money you want to pass\n");
+		scanf("%d", &Money);
+		printf("Enter the ID of the customer you want to pay this value from him\n");
+		scanf("%d", &ID1);
+		printf("Enter the ID of the customer you want to Add this value to him\n");
+		scanf("%d", &ID2);
+
+		MoveMoney(&ID1, &ID2 , &Money);
+		printf("Here is the new data of the Bank\n");
+		PrintLinkedList();
+		break;
+
+	case 'E':
+	case 'e':
+		printf("Enter the ID of the customer you want to display his data\n");
+		scanf("%d", &ID);
+		ShowData(ID);
+		break;
+	case 'F':
+	case 'f':
+		break;
+
+	default:
+		printf("Sorry,There is no operation selected\nTry Again!\n");
+		break;
+	}//end of the switch case
+
+
+	return 0;
+}
+

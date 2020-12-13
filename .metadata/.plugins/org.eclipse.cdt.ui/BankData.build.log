@@ -1,0 +1,5 @@
+19:13:36 **** Clean-only build of configuration Debug for project BankData ****
+rm -rf src/Showdata.d src/MoveMoney.o src/DeleteCustomerData.o src/EditCustomerData.o src/Main.d src/Showdata.o src/DeleteCustomerData.d src/EditCustomerData.d src/Main.o src/PrintLinkedList.d BankData.exe src/AddNewCustomer.o src/AddNewCustomer.d src/PrintLinkedList.o src/MoveMoney.d 
+
+19:13:38 Build Finished. 0 errors, 0 warnings. (took 2s.178ms)
+
